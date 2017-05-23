@@ -43,7 +43,7 @@ public class DlgMenu : UIBase
         this.loadButton = this.mRoot.FindChild("LoadButton").GetComponent<Button>();
 
         this.exitButton.onClick.AddListener(this.ExitGame);
-
+        this.startButton.onClick.AddListener(this.StartGame);
     }
     protected override void OnAddListener()
     {
@@ -58,6 +58,13 @@ public class DlgMenu : UIBase
     protected override void RealseWidget()
     {
        
+    }
+    private void StartGame()
+    {
+        SceneBase s = new SceneBase();
+        SceneManager.singleton.CreateScene(0, s);
+        SceneManager.singleton.LoadScene();
+        SceneManager.singleton.ChangeMap(1);
     }
     private void ExitGame()
     {
