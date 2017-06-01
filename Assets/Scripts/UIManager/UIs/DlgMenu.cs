@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using CaomaoFramework;
 using UnityEngine.UI;
+using CinemaDirector;
 [Serializable]
 public class DlgMenu : UIBase
 {
@@ -18,6 +19,7 @@ public class DlgMenu : UIBase
     public override void Init()
     {
         EventDispatch.AddListener("DlgMenu", this.Show);
+        EventDispatch.AddListener("DlgMenuHide", this.Hide);
     }
 
     public override void OnDisable()
@@ -33,6 +35,7 @@ public class DlgMenu : UIBase
     public override void Realse()
     {
         EventDispatch.RemoveListener("DlgMenu", this.Show);
+        EventDispatch.RemoveListener("DlgMenuHide", this.Hide);
     }
 
     protected override void InitWidget()
@@ -57,14 +60,13 @@ public class DlgMenu : UIBase
 
     protected override void RealseWidget()
     {
-       
+        
     }
     private void StartGame()
     {
-        SceneBase s = new SceneBase();
-        SceneManager.singleton.CreateScene(0, s);
-        SceneManager.singleton.LoadScene();
-        SceneManager.singleton.ChangeMap(1);
+        EventDispatch.Broadcast("DlgMenuHide");
+        GameController.Init();
+        GameController.Start();           
     }
     private void ExitGame()
     {

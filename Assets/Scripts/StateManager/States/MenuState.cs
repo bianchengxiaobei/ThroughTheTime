@@ -5,6 +5,7 @@ using CaomaoFramework;
 
 public class MenuState : ClientStateBase
 {
+    string a = "adfdfd";
     public override void OnEnter()
     {
         EventDispatch.Broadcast("DlgMenu");
