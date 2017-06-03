@@ -130,7 +130,6 @@ public class ActorMyself : ActorPlayer<EntityMyself>
         bool triggerSkillSuccess = false;
         for (int j = 0; j < this.skillInputs.Count; j++)
         {
-            Debug.Log("efef");
             SkillInput skillInput = this.skillInputs[j];
             bool inputVaild;//技能输入是否有效
             bool skillSuccess;//技能释放是否成功
@@ -156,7 +155,12 @@ public class ActorMyself : ActorPlayer<EntityMyself>
             {
                 
             }
+            else if(pct == PlayerCommandType.Punch)
+            {
+                m_animator.SetTrigger("Punch");
+            }
         }
+
         if (input && (pct == PlayerCommandType.Forward || pct == PlayerCommandType.Backward || pct == PlayerCommandType.Up || pct == PlayerCommandType.Down))
         {
             this.dirCmdTakeEffectFrameCount = Time.frameCount;
@@ -181,17 +185,14 @@ public class ActorMyself : ActorPlayer<EntityMyself>
         {
             return;
         }
-        Debug.Log("efwwef");
         List<PlayerCommand> commands = scs.commands;
         //如果当前帧大于技能下个有效帧，就重头开始计算
         if (Time.frameCount > scs.nextCombineValidFC)
         {
-            Debug.Log("wefwe334:"+ scs.nextCombineValidFC);
             scs.idx = 0;
             scs.tunedPlayerCmdType = PlayerCommandType.End;
             if (this.IsInputCmdMatch(commands, scs.idx, pct, isTuneDirCommand))
             {
-                Debug.Log("1222122");
                 scs.nextCombineValidFC = Time.frameCount + UnityTool.TimeToFrameCount(commands[scs.idx].combineDuration);
                 scs.idx++;
             }
@@ -202,7 +203,6 @@ public class ActorMyself : ActorPlayer<EntityMyself>
         }
         else if (this.IsInputCmdMatch(commands, scs.idx, pct, isTuneDirCommand))
         {
-            Debug.Log("e111fef");
             Debug.Log(scs.idx);
             inputValid = true;
             //技能到了技能指令的最后一步，重置，并触发技能
