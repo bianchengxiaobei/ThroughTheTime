@@ -27,7 +27,10 @@ public class GameController
     /// 主角
     /// </summary>
     public static EntityMyself thePlayer;
-
+    /// <summary>
+    /// 世界节点
+    /// </summary>
+    public static Transform WorldPoint;
     public static EntityParent m_currentEntity;
     public static Dictionary<uint, EntityParent> entities = new Dictionary<uint, EntityParent>();
     #endregion

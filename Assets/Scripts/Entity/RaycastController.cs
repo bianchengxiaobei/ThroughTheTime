@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-[RequireComponent(typeof(BoxCollider2D))]
+[RequireComponent(typeof(CompositeCollider2D))]
 public class RaycastController : MonoBehaviour
 {
     public LayerMask collisionMask;
