@@ -12,10 +12,6 @@ public class GameController
     /// </summary>
     private static Dictionary<int, EntityParent> gameObjects = new Dictionary<int, EntityParent>();
     /// <summary>
-    /// 是否在城镇内
-    /// </summary>
-    public static bool isInTown = true;
-    /// <summary>
     /// 是否显示技能特效
     /// </summary>
     public static bool isShowSkillFx = true;
@@ -57,7 +53,12 @@ public class GameController
     #region 公有方法
     public static void Init()
     {
-
+        if (WorldPoint == null)
+        {
+            WorldPoint = new GameObject("World").transform;
+            SceneManager.singleton.Init(WorldPoint);
+        }
+        MonoBehaviour.DontDestroyOnLoad(WorldPoint);
     }
     public static void Start()
     {

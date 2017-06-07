@@ -77,6 +77,7 @@ public partial class EntityMyself : EntityPlayer
             GameObject = gameobject;
             Transform = gameobject.transform;
             Transform.gameObject.layer = 8;
+            Transform.SetParent(GameController.WorldPoint);
             UpdatePosition();
             SetForward(true);
             gameobject.SetActive(false);

@@ -43,7 +43,7 @@ public class StateIdle : IEntityState
         {
             return;
         }
-        if (theOwner is EntityPlayer && GameController.isInTown)
+        if (theOwner is EntityPlayer)
         {
             //theOwner.SetAction(-1);
         }

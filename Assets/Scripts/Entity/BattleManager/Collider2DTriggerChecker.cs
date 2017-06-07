@@ -40,6 +40,7 @@ public class Collider2DTriggerChecker
         }
         if (Collider2DTriggerChecker.currFrameCount != Time.frameCount)
         {
+            Collider2DTriggerChecker.colsCache.Clear();
             //初始化在World节点下的所欲碰撞加入colsCache
             UnityTool.GetComponentsInChildren<Collider2D>(GameController.WorldPoint, Collider2DTriggerChecker.colsCache, false);
             Collider2DTriggerChecker.currFrameCount = Time.frameCount;

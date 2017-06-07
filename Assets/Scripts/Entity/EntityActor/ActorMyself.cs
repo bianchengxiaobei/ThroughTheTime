@@ -1,18 +1,38 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 using CaomaoFramework;
+public struct UpdateACModifyInfo
+{
+    public bool isAdd;
+
+    public Action<float> ac;
+
+    public UpdateACModifyInfo(bool b, Action<float> a)
+    {
+        this.isAdd = b;
+        this.ac = a;
+    }
+}
 public class ActorMyself : ActorPlayer<EntityMyself>
 {
     public GameMotor motor;
     public List<SkillInput> skillInputs;
+    private SortedDictionary<int, List<UpdateACModifyInfo>> needModifyACs = new SortedDictionary<int, List<UpdateACModifyInfo>>();
+    private SortedDictionary<int, List<Action<float>>> updateACs = new SortedDictionary<int, List<Action<float>>>();
+    public List<HitFrame> hitFrames;
     public bool isMoving = false;
     private int dirCmdTakeEffectFrameCount;
-    void Start ()
+    public override void Awake()
     {
-        //skillInputs = new List<SkillInput>();
+        base.Awake();
+        foreach (var hit in hitFrames)
+        {
+            hit.Init(this);
+        }
         DontDestroyOnLoad(this);
-	}
+    }
 	void Update ()
     {
         ActChange();
@@ -22,6 +42,73 @@ public class ActorMyself : ActorPlayer<EntityMyself>
             return;
         }
 	}
+    private void FixedUpdate()
+    {
+        foreach (var current in this.needModifyACs)
+        {
+            for (int i = 0; i < current.Value.Count; i++)
+            {
+                if (current.Value[i].isAdd)
+                {
+                    if (!this.updateACs.ContainsKey(current.Key))
+                    {
+                        this.updateACs.Add(current.Key, new List<Action<float>>());
+                    }
+                    this.updateACs[current.Key].Add(current.Value[i].ac);
+                }
+                else if (this.updateACs.ContainsKey(current.Key))
+                {
+                    this.updateACs[current.Key].Remove(current.Value[i].ac);
+                    if (this.updateACs[current.Key].Count == 0)
+                    {
+                        this.updateACs.Remove(current.Key);
+                    }
+                }
+            }
+        }
+        this.needModifyACs.Clear();
+        var updateAcs = this.updateACs.Values;
+        foreach (List<Action<float>> current in updateAcs)
+        {
+            for (int k = 0; k < current.Count; k++)
+            {
+                if (!this.IsACInWillRemove(current[k]))
+                {
+                    current[k](Time.fixedDeltaTime);
+                }
+            }
+        }
+    }
+    private bool IsACInWillRemove(Action<float> ac)
+    {
+        foreach (KeyValuePair<int, List<UpdateACModifyInfo>> current in this.needModifyACs)
+        {
+            for (int i = 0; i < current.Value.Count; i++)
+            {
+                if (!current.Value[i].isAdd && current.Value[i].ac == ac)
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    public override void AddUpdateAction(int id, Action<float> ac)
+    {
+        if (!this.needModifyACs.ContainsKey(id))
+        {
+            this.needModifyACs.Add(id, new List<UpdateACModifyInfo>());
+        }
+        this.needModifyACs[id].Add(new UpdateACModifyInfo(true, ac));
+    }
+    public override void RemoveUpdateAction(int id, Action<float> ac)
+    {
+        if (!this.needModifyACs.ContainsKey(id))
+        {
+            this.needModifyACs.Add(id, new List<UpdateACModifyInfo>());
+        }
+        this.needModifyACs[id].Add(new UpdateACModifyInfo(false, ac));
+    }
     private void PrecessMotionInput()
     {
         if (null == Entity)
@@ -157,6 +244,7 @@ public class ActorMyself : ActorPlayer<EntityMyself>
             }
             else if(pct == PlayerCommandType.Punch)
             {
+                m_animator.SetBool("IsHited",false);
                 m_animator.SetTrigger("Punch");
             }
         }
