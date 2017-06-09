@@ -24,6 +24,14 @@ public class ActorMyself : ActorPlayer<EntityMyself>
     public List<HitFrame> hitFrames;
     public bool isMoving = false;
     private int dirCmdTakeEffectFrameCount;
+    private AnimatorStateInfo fullBodyStateInfo;
+    public readonly string punchNull = "Null";
+    public readonly string punch1 = "PunchRight";
+    public readonly string punch2 = "PunchLeft";
+    public readonly string punch3 = "PunchUp";
+    public readonly string actionCmd = "ActionCmd";
+    public int curComboCount = 0;//打击的次数
+    public bool isHitting = false;//是否正在打到别人
     public override void Awake()
     {
         base.Awake();
@@ -36,12 +44,43 @@ public class ActorMyself : ActorPlayer<EntityMyself>
 	void Update ()
     {
         ActChange();
+        AnimatorUpdate();
         this.PrecessMotionInput();
         if (null == Entity)
         {
             return;
         }
 	}
+    private void AnimatorUpdate()
+    {
+        fullBodyStateInfo = m_animator.GetCurrentAnimatorStateInfo(m_animator.GetLayerIndex("Full Body"));
+        if (!fullBodyStateInfo.IsName(punchNull))
+        {
+            this.m_animator.SetInteger(actionCmd, 0);
+            this.motor.enableStick = false;
+        }
+        else
+        {
+            //这里角色不能移动，不能旋转设置变量然后等动画播放完成之后设置回去
+            //这里角色没有打击到其他东西，就设置会IsHitting = false
+            if (this.motor.enableStick || isHitting == false)
+            {
+                return;
+            }
+            isHitting = false;
+            this.motor.enableStick = true;
+        }
+        //如果打击到的话，就设置下一个打击动作
+        if (fullBodyStateInfo.IsName(punch1) && (fullBodyStateInfo.normalizedTime > 0.6f) && this.curComboCount == 2 && isHitting)
+        {
+            this.m_animator.SetInteger(actionCmd, 1);
+        }
+        //如果打击到的话，就设置下一个打击动作
+        if (fullBodyStateInfo.IsName(punch2) && (fullBodyStateInfo.normalizedTime > 0.8f) && this.curComboCount == 3 && isHitting)
+        {
+            this.m_animator.SetInteger(actionCmd, 1);
+        }
+    }
     private void FixedUpdate()
     {
         foreach (var current in this.needModifyACs)
@@ -115,18 +154,6 @@ public class ActorMyself : ActorPlayer<EntityMyself>
         {
             return;
         }
-        //if (GameInputManager.Instance.GetJumpButtonDown())
-        //{
-        //    motor.Jump();
-        //}
-        //if (GameInputManager.Instance.GetJumpButtonUp())
-        //{
-        //    motor.JumpMin();
-        //}
-        //if (GameInputManager.Instance.GetRollButtonDown())
-        //{
-        //    motor.Roll();
-        //}
         if (GameInputManager.Instance.GetMoveRightDown())
         {
             this.InputCommand(PlayerCommandType.Forward);
@@ -244,8 +271,20 @@ public class ActorMyself : ActorPlayer<EntityMyself>
             }
             else if(pct == PlayerCommandType.Punch)
             {
-                m_animator.SetBool("IsHited",false);
-                m_animator.SetTrigger("Punch");
+                //如果是在Null动画状态下的话，攻击到别人就进入到攻击状态1
+                if (fullBodyStateInfo.IsName(punchNull))
+                {
+                    this.m_animator.SetInteger(actionCmd, 1);
+                    this.curComboCount = 1;
+                }
+                else if (fullBodyStateInfo.IsName(punch1) && isHitting)
+                {
+                    this.curComboCount = 2;
+                }
+                else if (fullBodyStateInfo.IsName(punch2) && isHitting)
+                {
+                    this.curComboCount = 3;
+                }
             }
         }
 
@@ -291,7 +330,6 @@ public class ActorMyself : ActorPlayer<EntityMyself>
         }
         else if (this.IsInputCmdMatch(commands, scs.idx, pct, isTuneDirCommand))
         {
-            Debug.Log(scs.idx);
             inputValid = true;
             //技能到了技能指令的最后一步，重置，并触发技能
             if (scs.idx >= commands.Count - 1)

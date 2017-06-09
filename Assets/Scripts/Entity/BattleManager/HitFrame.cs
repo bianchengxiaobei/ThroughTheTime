@@ -57,7 +57,7 @@ public class HitFrame : MonoBehaviour
         }
         if (theOwner is ActorMyself)
         {
-            theOwner.m_animator.SetBool("IsHited", true);
+            (theOwner as ActorMyself).isHitting = true;
         }
         Debug.Log("打击");
         //取得打击的点

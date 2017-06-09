@@ -64,7 +64,7 @@ public class GameMotorMyself : GameMotor
         //}
         speed = AccelerateSpeed(speed, targetSpeed);
         animator.SetFloat("Speed", speed);
-        if (!isRolling)
+        if (!isRolling && this.enableStick)
             characterController.Move(moveDir2D * Time.deltaTime* speedV, directionalInput,isFlying);
   
        // if ((characterController.collisions.above || characterController.collisions.below) && isFlying == false)

@@ -13,7 +13,11 @@ public partial class EntityMyself : EntityPlayer
     private bool m_bIsCreatingModel = false;
     //上次使用技能的时间
     public static float preSkillTime = 0;
-    public bool m_bIsCurrLeft = false;
+    //是否现在朝向左
+    private bool m_bIsCurrLeft = false;
+    //是否现在死亡了
+    private bool m_bIsDead = false;
+
     #endregion
     #region 属性
     /// <summary>
@@ -30,7 +34,20 @@ public partial class EntityMyself : EntityPlayer
             this.m_bIsCurrLeft = value;
         }
     }
-
+    /// <summary>
+    /// 是否现在死亡
+    /// </summary>
+    public bool IsDead
+    {
+        get
+        {
+            return this.m_bIsDead;
+        }
+        set
+        {
+            this.m_bIsDead = value;
+        }
+    }
     #endregion
     #region 重写方法
     public override void OnEnterWorld(Action callback = null)
