@@ -44,7 +44,7 @@ public class ActorMyself : ActorPlayer<EntityMyself>
 	void Update ()
     {
         ActChange();
-        AnimatorUpdate();
+        //AnimatorUpdate();
         this.PrecessMotionInput();
         if (null == Entity)
         {
@@ -63,12 +63,16 @@ public class ActorMyself : ActorPlayer<EntityMyself>
         {
             //这里角色不能移动，不能旋转设置变量然后等动画播放完成之后设置回去
             //这里角色没有打击到其他东西，就设置会IsHitting = false
-            if (this.motor.enableStick || isHitting == false)
+            if (this.motor.enableStick)
+            {
+                return;
+            }          
+            this.motor.enableStick = true;
+            if (isHitting == false)
             {
                 return;
             }
             isHitting = false;
-            this.motor.enableStick = true;
         }
         //如果打击到的话，就设置下一个打击动作
         if (fullBodyStateInfo.IsName(punch1) && (fullBodyStateInfo.normalizedTime > 0.6f) && this.curComboCount == 2 && isHitting)
@@ -76,7 +80,7 @@ public class ActorMyself : ActorPlayer<EntityMyself>
             this.m_animator.SetInteger(actionCmd, 1);
         }
         //如果打击到的话，就设置下一个打击动作
-        if (fullBodyStateInfo.IsName(punch2) && (fullBodyStateInfo.normalizedTime > 0.8f) && this.curComboCount == 3 && isHitting)
+        if (fullBodyStateInfo.IsName(punch2) && (fullBodyStateInfo.normalizedTime > 0.6f) && this.curComboCount == 3 && isHitting)
         {
             this.m_animator.SetInteger(actionCmd, 1);
         }
@@ -272,19 +276,20 @@ public class ActorMyself : ActorPlayer<EntityMyself>
             else if(pct == PlayerCommandType.Punch)
             {
                 //如果是在Null动画状态下的话，攻击到别人就进入到攻击状态1
-                if (fullBodyStateInfo.IsName(punchNull))
-                {
-                    this.m_animator.SetInteger(actionCmd, 1);
-                    this.curComboCount = 1;
-                }
-                else if (fullBodyStateInfo.IsName(punch1) && isHitting)
-                {
-                    this.curComboCount = 2;
-                }
-                else if (fullBodyStateInfo.IsName(punch2) && isHitting)
-                {
-                    this.curComboCount = 3;
-                }
+                //if (fullBodyStateInfo.IsName(punchNull))
+                //{
+                //    this.m_animator.SetInteger(actionCmd, 1);
+                //    this.curComboCount = 1;
+                //}
+                //else if (fullBodyStateInfo.IsName(punch1) && isHitting)
+                //{
+                //    this.curComboCount = 2;
+                //}
+                //else if (fullBodyStateInfo.IsName(punch2) && isHitting)
+                //{
+                //    this.curComboCount = 3;
+                //}
+                (Entity as EntityMyself).NormalAttack();
             }
         }
 

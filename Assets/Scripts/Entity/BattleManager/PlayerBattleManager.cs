@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using CaomaoFramework;
+using CaomaoFramework.EntityFsm;
 public class PlayerBattleManager : BattleManagerBase
 {
     private List<int> preCmds = new List<int>();
@@ -9,6 +10,14 @@ public class PlayerBattleManager : BattleManagerBase
         : base(_theOwner, _skillManager)
     {
         this.m_skillManager = _skillManager;
+    }
+    public override void CastSkill(int skillId)
+    {
+        theOnwer.ChangeMotionState(MotionState.ATTACKING, skillId);
+    }
+    public override void OnAttacking(int nSkillID)
+    {
+        m_skillManager.OnAttacking(nSkillID);
     }
     public void TriggerSkill(string _skillName, PlayerCommandType tunedPCT = PlayerCommandType.End)
     {
@@ -40,5 +49,54 @@ public class PlayerBattleManager : BattleManagerBase
         }
         //能力是否足够
         theOnwer.CastSkill(skillName);
+    }
+    public void NormalAttack()
+    {
+        if (theOnwer.IsDead || theOnwer.stiff || theOnwer.charging)
+        {
+            return;
+        }
+        //连续技能时间间隔内
+        if ((this.m_skillManager as PlayerSkillManager).IsIntervalCooldown())
+        {
+            Debug.Log("111");
+            preCmds.Add(0);
+            return;
+        }
+        int curSkill = (this.m_skillManager as PlayerSkillManager).GetNormalAttackId();
+        if (curSkill == theOnwer.currSkillID && theOnwer.currSkillID != -1)
+        {
+            Debug.Log("1324311");
+            preCmds.Add(0);
+            return;
+        }
+        if ((this.m_skillManager as PlayerSkillManager).IsSkillCooldown(curSkill))
+        {
+            Debug.Log("11424231");
+            (this.m_skillManager as PlayerSkillManager).ClearComboSkill();
+            preCmds.Add(0);
+            return;
+        }
+        //如果没有连续技能就，没有下一条指令
+        if (!(this.m_skillManager as PlayerSkillManager).HasDependence(curSkill))
+        {
+            this.preCmds.Clear();
+        }
+        (this.m_skillManager as PlayerSkillManager).UpdateSkillCooltime(curSkill);
+        EntityMyself.preSkillTime = Time.realtimeSinceStartup;
+        theOnwer.CastSkill(curSkill);
+        TimerManager.AddTimer((uint)((m_skillManager as PlayerSkillManager).GetSkillIntervalTime(curSkill)), 0, NextNormalAttack);
+    }
+    private void NextNormalAttack()
+    {
+        Debug.Log("2222");
+        if (preCmds.Count == 0)
+        {
+            Debug.Log("22333322");
+            return;
+        }
+        Debug.Log("2333322222222");
+        preCmds.RemoveAt(0);
+        NormalAttack();
     }
 }

@@ -9,6 +9,7 @@ public class FSMMotion : FSMParent
     {
         m_theFSM.Add(MotionState.IDLE, new StateIdle());
         m_theFSM.Add(MotionState.WALKING, new StateWalking());
+        m_theFSM.Add(MotionState.ATTACKING, new StateAttack());
     }
     public override void ChangeStatus(EntityParent owner, string newState, params object[] args)
     {

@@ -54,6 +54,8 @@ public partial class EntityMyself : EntityPlayer
     {
         base.OnEnterWorld();
         CreateModel(callback);
+        this.m_skillManager = new PlayerSkillManager(this);
+        this.m_battleManager = new PlayerBattleManager(this, this.m_skillManager);
     }
     public override void CreateModel(Action callback = null)
     {
@@ -91,6 +93,7 @@ public partial class EntityMyself : EntityPlayer
             effectHandler = gameobject.AddComponent<EffectHandler>();
             actor.motor = motor;
             actor.Entity = this;
+            Actor = actor;
             GameObject = gameobject;
             Transform = gameobject.transform;
             Transform.gameObject.layer = 8;
@@ -101,6 +104,7 @@ public partial class EntityMyself : EntityPlayer
             gameobject.SetActive(true);
             this.IsVisiable = true;
             m_bIsCreatingModel = false;
+            Actor.ActChangeHandle = ActionChange;
             if (callback != null)
             {
                 callback();
@@ -135,7 +139,65 @@ public partial class EntityMyself : EntityPlayer
         //}
         Debug.Log("Skill");
     }
-
+    public override void CastSkill(int skillId)
+    {
+        Debug.Log("SkillCast");
+        walkingCastSkill = (currentMotionState == MotionState.WALKING);
+        this.currSkillID = skillId;
+        SkillData data = SkillData.dataMap[currSkillID];
+        if (null == data)
+        {
+            return;
+        }
+        this.m_battleManager.CastSkill(currSkillID);
+    }
+    public override void ActionChange(string preActName, string currActName)
+    {
+        if (string.IsNullOrEmpty(skillActName))
+        {
+            skillActName = "";
+        }
+        if (currActName.Equals("Null"))
+        {
+            ClearSkill(false);
+        }
+    }
+    public override void ClearSkill(bool remove = false)
+    {
+        TimerManager.DelTimer(hitTimerID);
+        TimerManager.DelTimer(delayAttackTimerID);
+        if (this.currSkillID != -1)
+        {
+            //if (SkillActionData.dataMap.ContainsKey(currHitAction) && remove)
+            //{
+            //    RemoveSfx(currHitAction);
+            //}
+            //SkillData data;
+            //if (SkillData.dataMap.TryGetValue(currSkillID, out data) && remove)
+            //{
+            //    foreach (var i in data.skillAction)
+            //    {
+            //        RemoveSfx(i);
+            //    }
+            //}
+            currHitAction = -1;
+        }
+        hitTimer.Clear();
+        if (Transform)
+        {
+            motor.enableStick = true;
+            motor.SetExtraSpeed(0);
+        }
+        ChangeMotionState(MotionState.IDLE);
+        currSkillID = -1;
+    }
+    public override void OnAttacking(int actionId)
+    {
+        if (m_battleManager != null)
+        {
+            this.m_battleManager.OnAttacking(actionId);
+        }
+    }
     #endregion
     #region 公有方法
     public void TriggerSkill(string _skillName, PlayerCommandType tunedPCT = PlayerCommandType.End)
@@ -145,12 +207,37 @@ public partial class EntityMyself : EntityPlayer
             (this.m_battleManager as PlayerBattleManager).TriggerSkill(_skillName, tunedPCT);
         }
     }
+    public void NormalAttack()
+    {
+        if (m_battleManager != null)
+        {
+            (this.m_battleManager as PlayerBattleManager).NormalAttack();
+        }
+    }
     public void SetForward(bool forward)
     {
         this.m_bIsCurrLeft = !forward;
         Vector3 eulerAngles = Transform.rotation.eulerAngles;
         eulerAngles.y = (this.m_bIsCurrLeft ? 0f : 180f);//转180度，180度默认是向右，也就是前|||0度是向左，也就是后
         Transform.rotation = Quaternion.Euler(eulerAngles);
+    }
+    /// <summary>
+    /// 更新技能
+    /// </summary>
+    public void UpdateSkill()
+    {
+        if (this.m_skillManager != null)
+        {
+            (this.m_skillManager as PlayerSkillManager).UpdateSkillData();
+        }
+    }
+    /// <summary>
+    /// 取得武器id
+    /// </summary>
+    /// <returns></returns>
+    public int GetWeaponType()
+    {
+        return 0;
     }
     #endregion
     #region 私有方法

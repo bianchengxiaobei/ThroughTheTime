@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <SkillData>
+    <id_i>0</id_i>
+    <type_i>0</type_i>
+    <weapon_i>0</weapon_i>
+    <dependSkill_l>0,0,1</dependSkill_l>
+    <cd_l>1000,1200,400</cd_l>
+    <skillAction_l>0</skillAction_l>
+  </SkillData>
+  <SkillData>
+    <id_i>1</id_i>
+    <type_i>0</type_i>
+    <weapon_i>0</weapon_i>
+    <dependSkill_l>0,1,2</dependSkill_l>
+    <cd_l>11000,1200,400</cd_l>
+    <skillAction_l>1</skillAction_l>
+  </SkillData>
+  <SkillData>
+    <id_i>2</id_i>
+    <type_i>0</type_i>
+    <weapon_i>0</weapon_i>
+    <dependSkill_l>1,1,0</dependSkill_l>
+    <cd_l>1000,1200,400</cd_l>
+    <skillAction_l>2</skillAction_l>
+  </SkillData>
+</root>

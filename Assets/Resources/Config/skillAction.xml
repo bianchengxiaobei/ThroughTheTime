@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <SkillAction>
+    <id_i>0</id_i>
+    <action_i>1</action_i>
+    <duration_i>0</duration_i>
+    <enableStick_b>false</enableStick_b>
+  </SkillAction>
+  <SkillAction>
+    <id_i>1</id_i>
+    <action_i>2</action_i>
+    <duration_i>0</duration_i>
+    <enableStick_b>false</enableStick_b>
+  </SkillAction>
+  <SkillAction>
+    <id_i>2</id_i>
+    <action_i>3</action_i>
+    <duration_i>0</duration_i>
+    <enableStick_b>false</enableStick_b>
+  </SkillAction>
+</root>

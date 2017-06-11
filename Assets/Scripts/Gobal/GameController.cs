@@ -4,13 +4,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using CaomaoFramework;
 using CinemaDirector;
-public class GameController
+public class GameController : GameControllerBase
 {
     #region 字段
-    /// <summary>
-    /// int=>场景中模型GUID
-    /// </summary>
-    private static Dictionary<int, EntityParent> gameObjects = new Dictionary<int, EntityParent>();
     /// <summary>
     /// 是否显示技能特效
     /// </summary>
@@ -19,16 +15,6 @@ public class GameController
     /// 是否正在加载场景
     /// </summary>
     public static bool isLoadingScene = false;
-    /// <summary>
-    /// 主角
-    /// </summary>
-    public static EntityMyself thePlayer;
-    /// <summary>
-    /// 世界节点
-    /// </summary>
-    public static Transform WorldPoint;
-    public static EntityParent m_currentEntity;
-    public static Dictionary<uint, EntityParent> entities = new Dictionary<uint, EntityParent>();
     #endregion
     #region 属性
     /// <summary>
