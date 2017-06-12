@@ -57,45 +57,44 @@ public class PlayerBattleManager : BattleManagerBase
             return;
         }
         //连续技能时间间隔内
-        if ((this.m_skillManager as PlayerSkillManager).IsIntervalCooldown())
-        {
-            Debug.Log("111");
-            preCmds.Add(0);
-            return;
-        }
+        //if ((this.m_skillManager as PlayerSkillManager).IsIntervalCooldown())
+        //{
+        //    Debug.Log("1");
+        //    preCmds.Add(0);
+        //    return;
+        //}
         int curSkill = (this.m_skillManager as PlayerSkillManager).GetNormalAttackId();
-        if (curSkill == theOnwer.currSkillID && theOnwer.currSkillID != -1)
-        {
-            Debug.Log("1324311");
-            preCmds.Add(0);
-            return;
-        }
+        //if (curSkill == theOnwer.currSkillID && theOnwer.currSkillID != -1)
+        //{
+        //    Debug.Log("3");
+        //    preCmds.Add(0);
+        //    return;
+        //}
         if ((this.m_skillManager as PlayerSkillManager).IsSkillCooldown(curSkill))
         {
-            Debug.Log("11424231");
-            (this.m_skillManager as PlayerSkillManager).ClearComboSkill();
-            preCmds.Add(0);
+            Debug.Log("4");
+            //(this.m_skillManager as PlayerSkillManager).ClearComboSkill();
+            //preCmds.Add(0);
             return;
         }
         //如果没有连续技能就，没有下一条指令
-        if (!(this.m_skillManager as PlayerSkillManager).HasDependence(curSkill))
-        {
-            this.preCmds.Clear();
-        }
+        //if (!(this.m_skillManager as PlayerSkillManager).HasDependence(curSkill))
+        //{
+        //    Debug.Log("5");
+        //    this.preCmds.Clear();
+        //}
         (this.m_skillManager as PlayerSkillManager).UpdateSkillCooltime(curSkill);
         EntityMyself.preSkillTime = Time.realtimeSinceStartup;
         theOnwer.CastSkill(curSkill);
-        TimerManager.AddTimer((uint)((m_skillManager as PlayerSkillManager).GetSkillIntervalTime(curSkill)), 0, NextNormalAttack);
+        //TimerManager.AddTimer((uint)((m_skillManager as PlayerSkillManager).GetSkillIntervalTime(curSkill)), 0, NextNormalAttack);
     }
     private void NextNormalAttack()
     {
-        Debug.Log("2222");
         if (preCmds.Count == 0)
         {
-            Debug.Log("22333322");
             return;
         }
-        Debug.Log("2333322222222");
+        Debug.Log("Next");
         preCmds.RemoveAt(0);
         NormalAttack();
     }

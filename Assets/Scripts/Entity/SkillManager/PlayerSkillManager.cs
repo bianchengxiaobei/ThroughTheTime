@@ -6,6 +6,7 @@ using CaomaoFramework.Data;
 public class PlayerSkillManager : SkillManagerBase
 {
     private int lastSkillID = 0;
+    private int attackCount = 1;
     private float lastAttackTime = 0.0f;
     /// <summary>
     /// 默认时间间隔为0.2s
@@ -82,11 +83,24 @@ public class PlayerSkillManager : SkillManagerBase
         if (dependenceSkill.ContainsKey(lastSkillID) && this.comboSkillPeriod.ContainsKey(lastSkillID))
         {
             int nextSkill = dependenceSkill[lastSkillID][2];
-            if (nextSkill > 0 && interval > skillInterval[lastSkillID] && interval < this.comboSkillPeriod[lastSkillID])
+            int count = dependenceSkill[lastSkillID][1];
+            //if (attackCount < count)
+            //{
+            //    attackCount++;
+            //}
+            //else
+            //{
+            //attackCount = 1;
+            //Debug.Log("Interval:"+interval);
+            //Debug.Log("SkillInterval:" + skillInterval[lastSkillID]);
+            //if (nextSkill > 0 && interval >= skillInterval[lastSkillID] && interval < this.comboSkillPeriod[lastSkillID])
+            if (nextSkill > 0 && interval <= skillCoolTime[lastSkillID])
             {
-                lastSkillID = nextSkill;
-                return nextSkill;
+                    Debug.Log("2");
+                    lastSkillID = nextSkill;
+                    return nextSkill;
             }
+            //}
         }
         lastSkillID = skillMapping.normalAttack;
         return skillMapping.normalAttack;
@@ -110,9 +124,18 @@ public class PlayerSkillManager : SkillManagerBase
     /// </summary>
     public void UpdateSkillCooltime(int skillId)
     {
-        this.intervalTime = skillInterval[skillId];
-        lastAttackTime = Time.realtimeSinceStartup;
-        skillLastCastTime[skillId] = lastAttackTime;
+        try
+        {
+            this.intervalTime = skillInterval[skillId];
+            lastAttackTime = Time.realtimeSinceStartup;
+            skillLastCastTime[skillId] = lastAttackTime;
+        }
+        catch (Exception e)
+        {
+            Debug.Log("SkillId:" + skillId);
+
+        }
+
     }
     /// <summary>
     /// 更新技能数据
@@ -143,16 +166,16 @@ public class PlayerSkillManager : SkillManagerBase
     }
     public override void Compensation(float t)
     {
-        lastAttackTime += t;
-        List<int> key = new List<int>();
-        foreach (var item in skillLastCastTime)
-        {
-            key.Add(item.Key);
-        }
-        for (int i = 0; i < key.Count; i++)
-        {
-            skillLastCastTime[key[i]] += t;
-        }
+        //lastAttackTime += t;
+        //List<int> key = new List<int>();
+        //foreach (var item in skillLastCastTime)
+        //{
+        //    key.Add(item.Key);
+        //}
+        //for (int i = 0; i < key.Count; i++)
+        //{
+        //    skillLastCastTime[key[i]] += t;
+        //}
     }
     /// <summary>
     /// 取得连续技能触发的时间间隔
@@ -165,6 +188,7 @@ public class PlayerSkillManager : SkillManagerBase
         {
             return 0;
         }
+        Debug.Log("正在:" + skillInterval[skillId]);
         return skillInterval[skillId];
     }
     /// <summary>
@@ -174,6 +198,8 @@ public class PlayerSkillManager : SkillManagerBase
     public bool IsIntervalCooldown()
     {
         int attackInterval = (int)((Time.realtimeSinceStartup - lastAttackTime)*1000);
+        Debug.Log("AttackInterval:" + attackInterval);
+        Debug.Log("IntervalTime:" + intervalTime);
         if (attackInterval < intervalTime)
         {
             return true;
@@ -218,6 +244,7 @@ public class PlayerSkillManager : SkillManagerBase
         int action = data.action;
         if (action > 0)
         {
+            Debug.Log("OnAttacking:" + action);
             theOwner.SetAction(action);
         }
     }

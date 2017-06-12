@@ -157,15 +157,15 @@ public partial class EntityMyself : EntityPlayer
         {
             skillActName = "";
         }
-        if (currActName.Equals("Null"))
+        if (currActName.Equals("Idle"))
         {
             ClearSkill(false);
         }
     }
     public override void ClearSkill(bool remove = false)
     {
-        TimerManager.DelTimer(hitTimerID);
-        TimerManager.DelTimer(delayAttackTimerID);
+        //TimerManager.DelTimer(hitTimerID);
+        //TimerManager.DelTimer(delayAttackTimerID);
         if (this.currSkillID != -1)
         {
             //if (SkillActionData.dataMap.ContainsKey(currHitAction) && remove)

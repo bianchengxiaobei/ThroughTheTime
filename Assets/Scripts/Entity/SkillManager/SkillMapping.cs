@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class SkillMapping
 {
-    public int normalAttack = 0;
+    public int normalAttack = 1001;
     public int spellOne = 0;
     public int spellTwo = 0;
     public int spellThree = 0;
